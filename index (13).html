@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성경 타임라인 · 창조부터 초대교회까지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#0a1228; --bg-mid:#0e1b3d; --bg-deep:#060a1a;
+    --text:#dde6f7; --text-soft:#9fb0d4;
+    --gold:#e8c66a; --gold-bright:#f6dd8a; --gold-deep:#b8902f;
+    --sky:#5b8fd6; --sky-glow:#8fc0ff;
+    --line:rgba(150,180,235,.22);
+    --panel:rgba(20,34,68,.6);
+    --panel-edge:rgba(140,175,235,.18);
+    --glow:rgba(143,192,255,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Gowun Batang',serif;color:var(--text);
+    background:
+      radial-gradient(ellipse at 50% -10%, #1a2c58 0%, transparent 55%),
+      radial-gradient(ellipse at 15% 25%, rgba(91,143,214,.16), transparent 45%),
+      radial-gradient(ellipse at 85% 75%, rgba(232,198,106,.08), transparent 50%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+    background-attachment:fixed;min-height:100%;line-height:1.7;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  #sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  #sky canvas{position:absolute;inset:0;width:100%;height:100%;}
+  .wrap{position:relative;z-index:2;max-width:860px;margin:0 auto;padding:46px 20px 90px;}
+
+  /* header */
+  .crest{text-align:center;font-size:38px;color:var(--gold);text-shadow:0 0 18px var(--glow),0 0 6px rgba(232,198,106,.6);animation:pulse 4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.85;}50%{opacity:1;}}
+  .kicker{text-align:center;font-family:'Cinzel',serif;letter-spacing:.3em;font-size:12px;color:var(--gold);text-transform:uppercase;margin:6px 0 16px;opacity:.9;}
+  h1{font-family:'Gowun Batang',serif;font-weight:700;text-align:center;font-size:clamp(28px,6.5vw,44px);color:#fff;line-height:1.25;text-shadow:0 0 30px rgba(143,192,255,.4);}
+  .sub{text-align:center;color:var(--text-soft);font-size:15.5px;max-width:560px;margin:14px auto 0;}
+
+  /* tabs */
+  .tabs{display:flex;justify-content:center;gap:10px;margin:30px 0 36px;flex-wrap:wrap;}
+  .tab{
+    font-family:'Cinzel',serif;font-size:13px;letter-spacing:.08em;cursor:pointer;
+    color:var(--text-soft);background:rgba(40,64,120,.3);border:1px solid var(--line);
+    padding:10px 22px;border-radius:30px;transition:all .16s ease;backdrop-filter:blur(3px);
+  }
+  .tab:hover{color:var(--gold);border-color:var(--gold);}
+  .tab.active{color:#1a1206;background:linear-gradient(145deg,var(--gold-bright),var(--gold-deep));border-color:var(--gold);box-shadow:0 0 20px -4px rgba(232,198,106,.5);}
+
+  .view{display:none;animation:fade .5s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  /* ── TIMELINE ── */
+  .tl{position:relative;padding-left:34px;}
+  .tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,transparent,var(--sky-glow) 8%,var(--gold) 92%,transparent);
+    box-shadow:0 0 12px var(--glow);}
+  .era{margin-bottom:14px;}
+  .era-head{
+    position:relative;cursor:pointer;display:flex;align-items:center;gap:12px;
+    padding:14px 18px;border-radius:10px;background:var(--panel);
+    border:1px solid var(--panel-edge);transition:all .16s ease;backdrop-filter:blur(5px);
+  }
+  .era-head:hover{border-color:var(--gold);box-shadow:0 0 20px -8px rgba(232,198,106,.4);}
+  .era-head::before{
+    content:"";position:absolute;left:-29px;top:50%;transform:translateY(-50%);
+    width:14px;height:14px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 12px var(--gold),0 0 0 4px rgba(10,18,40,1);
+  }
+  .era-icon{font-size:26px;flex-shrink:0;}
+  .era-meta{flex:1;}
+  .era-date{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;color:var(--gold);}
+  .era-title{font-size:18px;font-weight:700;color:#fff;}
+  .era-arrow{color:var(--sky-glow);font-size:18px;transition:transform .25s ease;}
+  .era.open .era-arrow{transform:rotate(90deg);}
+  .era-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+  .era.open .era-body{max-height:2000px;}
+  .era-inner{padding:6px 6px 6px 4px;}
+  .ev{
+    cursor:pointer;margin-top:10px;padding:13px 16px;border-radius:8px;
+    background:rgba(16,28,56,.5);border:1px solid var(--line);
+    transition:all .14s ease;display:flex;gap:12px;align-items:flex-start;
+  }
+  .ev:hover{background:rgba(34,54,104,.6);border-color:var(--gold);transform:translateX(4px);}
+  .ev-dot{color:var(--gold);font-size:13px;margin-top:3px;}
+  .ev-date{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:.08em;color:var(--sky-glow);}
+  .ev-name{font-size:15.5px;font-weight:700;color:var(--text);}
+  .ev-ref{font-size:12px;color:var(--text-soft);}
+
+  /* ── MODAL ── */
+  .modal-bg{display:none;position:fixed;inset:0;z-index:60;background:rgba(4,8,20,.74);
+    backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:22px;animation:fade .3s ease;}
+  .modal-bg.on{display:flex;}
+  .modal{position:relative;max-width:540px;width:100%;max-height:86vh;overflow-y:auto;
+    background:linear-gradient(180deg,rgba(24,40,78,.97),rgba(14,26,54,.97));
+    border:1px solid var(--gold);border-radius:14px;padding:32px 28px 26px;
+    box-shadow:0 24px 70px -20px rgba(0,0,0,.8),0 0 50px -10px rgba(232,198,106,.25);animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:none;}}
+  .modal-close{position:absolute;top:13px;right:15px;cursor:pointer;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:50%;background:rgba(40,64,120,.4);color:var(--text);
+    font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s ease;}
+  .modal-close:hover{border-color:var(--gold);color:var(--gold);transform:rotate(90deg);}
+  .modal-icon{text-align:center;font-size:46px;margin-bottom:8px;}
+  .modal-date{text-align:center;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.14em;color:var(--gold);}
+  .modal-title{text-align:center;font-size:26px;font-weight:700;color:#fff;margin:4px 0 4px;text-shadow:0 0 20px rgba(143,192,255,.3);}
+  .modal-ref{text-align:center;font-size:13px;color:var(--sky-glow);margin-bottom:18px;}
+  .modal-body p{color:var(--text);font-size:15px;margin-bottom:11px;line-height:1.75;}
+  .modal-note{font-size:12.5px;color:var(--text-soft);font-style:italic;border-top:1px solid var(--line);padding-top:12px;margin-top:6px;}
+
+  /* ── PAUL MAP ── */
+  .map-intro{text-align:center;color:var(--text-soft);font-size:15px;max-width:560px;margin:0 auto 22px;}
+  .journey-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+  .jp{font-family:'Cinzel',serif;font-size:12px;cursor:pointer;padding:8px 16px;border-radius:24px;
+    border:1px solid var(--line);background:rgba(40,64,120,.3);color:var(--text-soft);transition:all .16s ease;}
+  .jp:hover{color:#fff;}
+  .jp.active{color:#1a1206;border-color:transparent;box-shadow:0 0 18px -4px currentColor;}
+  .jp[data-j="1"].active{background:#e8c66a;}
+  .jp[data-j="2"].active{background:#7fd1a8;color:#06281a;}
+  .jp[data-j="3"].active{background:#8fc0ff;color:#06203f;}
+  .jp[data-j="4"].active{background:#e88f8f;color:#3a0606;}
+  .map-shell{background:var(--panel);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:10px;backdrop-filter:blur(5px);box-shadow:0 16px 50px -24px rgba(0,0,0,.6);}
+  svg#paulMap{width:100%;height:auto;display:block;border-radius:8px;background:linear-gradient(180deg,#0c1730,#0a1124);}
+  .city-label{font-family:'Cinzel',serif;font-size:9px;fill:var(--text);pointer-events:none;}
+  .city-dot{cursor:pointer;}
+  .journey-info{margin-top:18px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:12px;padding:20px 22px;backdrop-filter:blur(5px);}
+  .journey-info h3{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);letter-spacing:.06em;margin-bottom:4px;}
+  .journey-info .jdate{font-family:'Cinzel',serif;font-size:11px;color:var(--sky-glow);letter-spacing:.1em;margin-bottom:12px;}
+  .journey-info p{font-size:14.5px;color:var(--text);margin-bottom:10px;}
+  .journey-info .route{font-size:13px;color:var(--text-soft);}
+  .journey-info .route b{color:var(--sky-glow);font-weight:400;}
+
+  .note-box{font-size:12.5px;color:var(--text-soft);font-style:italic;text-align:center;max-width:600px;margin:26px auto 0;line-height:1.6;}
+  .foot{text-align:center;margin-top:42px;font-size:12px;color:var(--text-soft);font-family:'Cinzel',serif;letter-spacing:.12em;}
+
+  /* ===== AI 묻기 ===== */
+  .ask-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 18px;}
+  .ask-chip{font-family:'Gowun Batang',serif;font-size:13px;color:var(--text-soft);
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:18px;
+    padding:7px 14px;cursor:pointer;transition:all .15s;}
+  .ask-chip:hover{color:var(--gold);border-color:var(--gold);}
+  .ask-row{display:flex;gap:8px;max-width:680px;margin:0 auto;}
+  .ask-input{flex:1;font-family:'Gowun Batang',serif;font-size:15px;color:var(--text);
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:12px;
+    padding:13px 16px;}
+  .ask-input:focus{outline:none;border-color:var(--gold);}
+  .ask-input::placeholder{color:var(--text-soft);opacity:.7;}
+  .ask-btn{font-family:'Cinzel',serif;font-weight:600;font-size:14px;white-space:nowrap;
+    color:#1a1206;background:linear-gradient(145deg,var(--gold-bright),var(--gold-deep));
+    border:1px solid var(--gold);border-radius:12px;padding:13px 22px;cursor:pointer;
+    box-shadow:0 0 20px -6px rgba(232,198,106,.5);transition:transform .1s;}
+  .ask-btn:hover:not(:disabled){transform:translateY(-1px);}
+  .ask-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .ask-answer{display:none;max-width:680px;margin:18px auto 0;
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:18px 20px;font-size:15px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+  .ask-answer.show{display:block;animation:rise .3s ease;}
+  .ask-answer.err{color:#ffb4a8;border-color:rgba(255,120,100,.4);}
+  .ask-dots{display:inline-block;}
+  .ask-dots span{display:inline-block;width:8px;height:8px;margin:0 3px;border-radius:50%;
+    background:var(--gold);opacity:.4;animation:askpulse 1.2s infinite ease-in-out both;}
+  .ask-dots span:nth-child(2){animation-delay:.2s;}
+  .ask-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes askpulse{0%,80%,100%{transform:scale(.7);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+</style>
+</head>
+<body>
+<div id="sky"><canvas id="starCanvas"></canvas></div>
+<div class="wrap">
+
+  <div class="crest">📖</div>
+  <div class="kicker">Bible Timeline · 성경 역사 탐험</div>
+  <h1>창조부터 초대교회까지</h1>
+  <p class="sub">성경의 큰 이야기를 시대 순으로 따라가 보세요. 각 사건을 누르면 자세한 설명이 나옵니다.</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchView('timeline',this)">📜 성경 타임라인</div>
+    <div class="tab" onclick="switchView('paul',this)">🗺️ 바울의 전도여행</div>
+    <div class="tab" onclick="switchView('ask',this)">✨ AI에게 묻기</div>
+  </div>
+
+  <!-- ===== TIMELINE VIEW ===== -->
+  <div id="timeline" class="view active">
+    <div class="tl" id="tlRoot"></div>
+    <p class="note-box">※ 창조·족장 시대 등 초기 연대는 전통적·추정 연대이며, 학자에 따라 견해가 다를 수 있습니다. 신약 이후의 연대는 비교적 분명합니다.</p>
+  </div>
+
+  <!-- ===== PAUL VIEW ===== -->
+  <div id="paul" class="view">
+    <p class="map-intro">사도 바울은 복음을 전하기 위해 지중해 세계를 여러 차례 여행했습니다. 아래 여행을 선택하면 경로가 지도에 나타납니다.</p>
+    <div class="journey-pills" id="jPills">
+      <div class="jp active" data-j="1" onclick="selectJourney(1,this)">1차 여행</div>
+      <div class="jp" data-j="2" onclick="selectJourney(2,this)">2차 여행</div>
+      <div class="jp" data-j="3" onclick="selectJourney(3,this)">3차 여행</div>
+      <div class="jp" data-j="4" onclick="selectJourney(4,this)">로마로의 여정</div>
+    </div>
+    <div class="map-shell">
+      <svg id="paulMap" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="routeglow"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- stylised landmasses (eastern Mediterranean) -->
+        <g id="land" fill="#16264a" stroke="#26406e" stroke-width="1" opacity=".9">
+          <!-- Italy -->
+          <path d="M70 150 q15 30 6 70 q-4 28 -22 50 l-12 -8 q14 -22 16 -46 q4 -34 -4 -60 z"/>
+          <!-- Greece / Macedonia -->
+          <path d="M180 120 q40 -6 70 10 q20 12 10 40 q-30 30 -64 28 q-26 -2 -34 -30 q-6 -34 18 -48 z"/>
+          <!-- Asia Minor (Anatolia) -->
+          <path d="M300 110 q90 -16 180 4 q40 8 70 0 q10 30 -16 46 q-70 26 -150 22 q-70 -2 -100 -28 q-12 -28 16 -44 z"/>
+          <!-- Cyprus -->
+          <path d="M430 200 q26 -6 44 6 q-4 14 -26 14 q-20 0 -18 -20 z"/>
+          <!-- Levant / Syria-Israel coast -->
+          <path d="M520 170 q26 30 18 90 q-6 50 -30 110 l-22 -6 q22 -56 26 -104 q4 -52 -12 -86 z"/>
+          <!-- North Africa hint -->
+          <path d="M40 360 q200 -10 400 6 q120 6 200 -4 l0 60 l-600 0 z" opacity=".6"/>
+        </g>
+        <!-- sea label -->
+        <text x="250" y="270" fill="#3a567f" font-size="13" font-style="italic" font-family="serif" opacity=".7">지중해</text>
+
+        <g id="routeLayer"></g>
+        <g id="cityLayer"></g>
+      </svg>
+    </div>
+    <div class="journey-info" id="jInfo"></div>
+    <p class="note-box">※ 경로는 사도행전 기록을 바탕으로 한 단순화된 그림이며, 정확한 지리 지도가 아닙니다. 학습용 개요로 활용하세요.</p>
+  </div>
+
+  <!-- ===== AI ASK VIEW ===== -->
+  <div id="ask" class="view">
+    <p class="map-intro">성경의 사건, 인물, 시대 흐름이 궁금하면 무엇이든 물어보세요. 이 타임라인의 내용을 바탕으로 쉽게 설명해 드려요.</p>
+    <div class="ask-chips">
+      <div class="ask-chip" onclick="askChip('출애굽 사건을 간단히 설명해줘')">📖 사건 설명</div>
+      <div class="ask-chip" onclick="askChip('아브라함은 어떤 인물이야?')">👤 인물 소개</div>
+      <div class="ask-chip" onclick="askChip('창조부터 출애굽까지 미니 타임라인으로 정리해줘')">📜 미니 타임라인</div>
+      <div class="ask-chip" onclick="askChip('바울의 2차 전도여행은 어떤 여정이었어?')">🗺️ 전도여행</div>
+    </div>
+    <div class="ask-row">
+      <input type="text" id="askInput" class="ask-input"
+        placeholder="예) 다윗과 골리앗 이야기를 알려줘"
+        onkeydown="if(event.key==='Enter') askAI()">
+      <button class="ask-btn" id="askBtn" onclick="askAI()">묻기</button>
+    </div>
+    <div class="ask-answer" id="askAnswer"></div>
+    <p class="note-box">※ AI가 타임라인 내용을 바탕으로 설명하지만, 더 정확한 내용은 성경 본문과 선생님께 확인하세요.</p>
+  </div>
+
+  <div class="foot">총신 · 청소년부 &nbsp;·&nbsp; Soli Deo Gloria</div>
+</div>
+
+<!-- ===== EVENT MODAL ===== -->
+<div class="modal-bg" id="evModal" onclick="closeModalBg(event)">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal()">×</div>
+    <div class="modal-icon" id="mIcon">📖</div>
+    <div class="modal-date" id="mDate"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-ref" id="mRef"></div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-note" id="mNote"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   TIMELINE DATA — eras with events
+   ============================================================ */
+const ERAS = [
+  {
+    icon:"🌍", date:"태초", title:"창조와 태초의 역사",
+    events:[
+      {icon:"🌟",date:"태초",name:"천지 창조",ref:"창세기 1–2장",
+       body:["하나님께서 말씀으로 하늘과 땅, 빛과 어둠, 바다와 육지, 모든 생물을 지으셨고, 마지막으로 자신의 형상대로 사람을 창조하셨습니다.","엿새 동안 만물을 지으시고 일곱째 날에 안식하시며, 모든 창조가 \"심히 좋았더라\"고 하셨습니다."],
+       note:"성경의 가장 첫 장면으로, 모든 역사의 출발점입니다."},
+      {icon:"🍎",date:"태초",name:"타락 — 에덴에서의 범죄",ref:"창세기 3장",
+       body:["아담과 하와가 뱀의 유혹에 넘어가 하나님의 명령을 어기고 선악과를 먹었습니다.","이로 인해 죄와 죽음이 세상에 들어왔지만, 하나님은 이미 구원자를 보내실 약속(원시복음)을 주셨습니다."],
+       note:""},
+      {icon:"🌊",date:"태초",name:"노아의 홍수",ref:"창세기 6–9장",
+       body:["사람의 죄악이 가득하자 하나님은 홍수로 세상을 심판하셨고, 의인 노아와 그 가족, 그리고 동물들을 방주로 구원하셨습니다.","홍수 후 하나님은 무지개를 언약의 표징으로 주시며 다시는 물로 심판하지 않으시겠다 약속하셨습니다."],
+       note:""},
+    ]
+  },
+  {
+    icon:"⛺", date:"약 2000–1800 BC (전통)", title:"족장 시대",
+    events:[
+      {icon:"⭐",date:"약 2000 BC",name:"아브라함의 부르심",ref:"창세기 12장",
+       body:["하나님은 아브라함을 불러 고향을 떠나게 하시고, 그를 큰 민족으로 삼아 모든 민족이 그를 통해 복을 받게 하겠다고 약속하셨습니다.","믿음으로 순종한 아브라함은 '믿음의 조상'이 되었습니다."],
+       note:"이스라엘 민족과 구원 언약의 출발점입니다."},
+      {icon:"🐑",date:"족장 시대",name:"이삭과 야곱",ref:"창세기 21–35장",
+       body:["약속의 아들 이삭, 그리고 그의 아들 야곱(이스라엘)으로 언약이 이어졌습니다.","야곱의 열두 아들은 훗날 이스라엘 열두 지파의 조상이 됩니다."],
+       note:""},
+      {icon:"🌾",date:"족장 시대",name:"요셉과 애굽 이주",ref:"창세기 37–50장",
+       body:["형들에게 팔려 애굽으로 간 요셉은 하나님의 섭리로 총리가 되어, 흉년 때 가족을 구원합니다.","이렇게 야곱의 가족이 애굽에 정착하게 됩니다."],
+       note:""},
+    ]
+  },
+  {
+    icon:"🔥", date:"약 1500–1400 BC (전통)", title:"출애굽과 광야",
+    events:[
+      {icon:"🔥",date:"출애굽 시대",name:"모세와 출애굽",ref:"출애굽기 1–15장",
+       body:["애굽에서 종이 된 이스라엘 백성을 위해 하나님은 모세를 세우셨고, 열 가지 재앙 끝에 백성을 이끌어 내셨습니다.","홍해가 갈라지는 기적으로 그들은 자유를 얻었습니다."],
+       note:"구약에서 가장 중요한 구원 사건으로, 유월절의 기원입니다."},
+      {icon:"📜",date:"출애굽 시대",name:"시내산 언약과 십계명",ref:"출애굽기 19–20장",
+       body:["시내산에서 하나님은 이스라엘과 언약을 맺으시고 십계명을 비롯한 율법을 주셨습니다.","이스라엘은 하나님의 백성으로서 어떻게 살아야 하는지 배우게 됩니다."],
+       note:""},
+    ]
+  },
+  {
+    icon:"🏛️", date:"약 1400–1050 BC (전통)", title:"정복과 사사 시대",
+    events:[
+      {icon:"🎺",date:"가나안 정복",name:"여호수아의 가나안 정복",ref:"여호수아서",
+       body:["모세의 후계자 여호수아의 인도로 이스라엘은 요단강을 건너 약속의 땅 가나안에 들어갑니다.","여리고 성이 무너지는 등 하나님의 도우심으로 땅을 정복하고 분배합니다."],
+       note:""},
+      {icon:"⚔️",date:"사사 시대",name:"사사들의 시대",ref:"사사기",
+       body:["왕이 없던 시기, 백성이 죄에 빠질 때마다 하나님은 사사(지도자)를 세워 구원하셨습니다.","기드온, 삼손, 드보라 등이 이 시대의 인물입니다."],
+       note:"\"그 때에 이스라엘에 왕이 없으므로 사람마다 자기 소견에 옳은 대로 행하였더라\""},
+    ]
+  },
+  {
+    icon:"👑", date:"약 1050–586 BC", title:"통일 왕국과 분열 왕국",
+    events:[
+      {icon:"👑",date:"약 1050 BC",name:"사울 · 다윗 · 솔로몬",ref:"사무엘상–열왕기상",
+       body:["이스라엘 최초의 왕 사울에 이어, 하나님의 마음에 합한 다윗이 왕이 되어 나라를 굳건히 합니다.","다윗의 아들 솔로몬은 예루살렘 성전을 건축하고 지혜로 이름을 떨칩니다."],
+       note:"통일 왕국의 황금기입니다."},
+      {icon:"⚡",date:"약 930 BC",name:"왕국의 분열",ref:"열왕기상 12장",
+       body:["솔로몬 사후 나라는 북이스라엘과 남유다로 나뉩니다.","선지자들이 끊임없이 회개를 외쳤지만 백성은 자주 우상숭배에 빠졌습니다."],
+       note:""},
+      {icon:"🕯️",date:"약 722 / 586 BC",name:"멸망과 포로",ref:"열왕기하 17·25장",
+       body:["북이스라엘은 앗수르에(약 722 BC), 남유다는 바벨론에(586 BC) 멸망하고, 예루살렘 성전이 파괴됩니다.","많은 백성이 바벨론으로 끌려가 포로 생활을 합니다."],
+       note:""},
+    ]
+  },
+  {
+    icon:"🌱", date:"약 538–400 BC", title:"포로 귀환과 구약의 마무리",
+    events:[
+      {icon:"🏗️",date:"약 538 BC~",name:"포로 귀환과 성전 재건",ref:"에스라 · 느헤미야",
+       body:["페르시아 고레스 왕의 칙령으로 유대인들이 고향으로 돌아옵니다.","스룹바벨이 성전을, 느헤미야가 예루살렘 성벽을 재건하고, 에스라가 율법을 가르칩니다."],
+       note:""},
+      {icon:"🤫",date:"약 400 BC~",name:"중간기 — '침묵의 400년'",ref:"구약과 신약 사이",
+       body:["말라기 이후 약 400년간 기록된 예언이 없는 기간입니다.","이 시기에 헬라 문화의 확산, 회당의 발전 등 신약 시대의 배경이 형성됩니다."],
+       note:"이 침묵을 깨고 신약이 시작됩니다."},
+    ]
+  },
+  {
+    icon:"✝️", date:"약 4 BC – AD 30", title:"예수 그리스도의 오심",
+    events:[
+      {icon:"👶",date:"약 4 BC",name:"예수님의 탄생",ref:"마태복음 1–2장 · 누가복음 2장",
+       body:["약속된 구원자 예수님이 베들레헴에서 태어나셨습니다.","말씀이 육신이 되어 우리 가운데 거하셨습니다(임마누엘, 하나님이 우리와 함께)."],
+       note:"역사적으로 예수님의 탄생은 약 BC 6~4년경으로 추정됩니다."},
+      {icon:"🕊️",date:"약 AD 27~",name:"공생애 — 가르침과 기적",ref:"사복음서",
+       body:["예수님은 약 3년간 하나님 나라를 가르치고, 병자를 고치며, 제자들을 부르셨습니다.","팔복, 비유, 수많은 기적이 이 시기의 일입니다."],
+       note:""},
+      {icon:"✝️",date:"약 AD 30",name:"십자가와 부활",ref:"사복음서",
+       body:["예수님은 인류의 죄를 위해 십자가에 못 박혀 죽으시고, 사흘 만에 부활하셨습니다.","이 사건은 기독교 신앙의 핵심이며, 죄와 죽음에 대한 승리입니다."],
+       note:"부활은 복음의 중심입니다."},
+    ]
+  },
+  {
+    icon:"🔥", date:"약 AD 30–100", title:"초대교회와 복음의 확산",
+    events:[
+      {icon:"🔥",date:"약 AD 30",name:"오순절 성령강림",ref:"사도행전 2장",
+       body:["부활하신 예수님이 승천하신 후, 성령이 제자들에게 임하여 교회가 시작됩니다.","베드로의 설교로 하루에 약 3천 명이 믿게 됩니다."],
+       note:"교회의 탄생일이라 불립니다."},
+      {icon:"✉️",date:"약 AD 47–58",name:"바울의 전도여행",ref:"사도행전 13–28장",
+       body:["사도 바울이 여러 차례 지중해 세계를 여행하며 복음을 전하고 교회를 세웁니다.","그가 쓴 편지들(서신서)은 신약의 큰 부분을 이룹니다."],
+       note:"'바울의 전도여행' 탭에서 자세히 살펴보세요!"},
+      {icon:"📚",date:"약 AD 50–100",name:"신약 성경의 기록",ref:"신약 전체",
+       body:["복음서, 사도행전, 서신서, 요한계시록 등 신약의 책들이 이 시기에 기록됩니다.","복음은 예루살렘에서 시작해 로마 제국 전역으로 퍼져 나갑니다."],
+       note:"이후 교회는 핍박 속에서도 계속 성장합니다."},
+    ]
+  },
+];
+
+/* ============================================================
+   PAUL'S JOURNEYS — cities (x,y on 640x420) + routes + info
+   coordinates are stylised, not geographically exact
+   ============================================================ */
+const CITIES = {
+  antioch:  {x:505,y:150, name:"안디옥(수리아)"},
+  seleucia: {x:495,y:172, name:"실루기아"},
+  salamis:  {x:445,y:202, name:"살라미"},
+  paphos:   {x:430,y:212, name:"바보"},
+  perga:    {x:392,y:170, name:"버가"},
+  pisidian: {x:380,y:150, name:"비시디아 안디옥"},
+  iconium:  {x:402,y:158, name:"이고니온"},
+  lystra:   {x:398,y:168, name:"루스드라"},
+  derbe:    {x:418,y:165, name:"더베"},
+  tarsus:   {x:470,y:150, name:"다소"},
+  troas:    {x:300,y:135, name:"드로아"},
+  philippi: {x:245,y:110, name:"빌립보"},
+  thess:    {x:218,y:122, name:"데살로니가"},
+  berea:    {x:205,y:130, name:"베뢰아"},
+  athens:   {x:222,y:158, name:"아덴"},
+  corinth:  {x:210,y:168, name:"고린도"},
+  ephesus:  {x:318,y:165, name:"에베소"},
+  miletus:  {x:312,y:178, name:"밀레도"},
+  jerusalem:{x:520,y:230, name:"예루살렘"},
+  caesarea: {x:508,y:218, name:"가이사랴"},
+  myra:     {x:360,y:200, name:"무라"},
+  crete:    {x:280,y:220, name:"그레데"},
+  malta:    {x:120,y:250, name:"멜리데(몰타)"},
+  rome:     {x:60,y:150,  name:"로마"},
+};
+
+const JOURNEYS = {
+  1:{ color:"#e8c66a", title:"제1차 전도여행", date:"약 AD 46–48",
+      desc:["바나바와 함께 떠난 첫 여행입니다. 안디옥에서 출발해 구브로(키프로스) 섬을 거쳐 소아시아 내륙으로 들어갔습니다.","루스드라에서는 돌에 맞아 죽은 줄로 여겨질 만큼 핍박을 받았지만, 다시 일어나 복음을 전했습니다."],
+      route:["antioch","seleucia","salamis","paphos","perga","pisidian","iconium","lystra","derbe","antioch"] },
+  2:{ color:"#7fd1a8", title:"제2차 전도여행", date:"약 AD 49–52",
+      desc:["실라와 함께한 여행으로, 디모데가 합류했습니다. 드로아에서 \"마게도냐로 건너와 우리를 도우라\"는 환상을 보고 처음으로 유럽(그리스)에 복음을 전했습니다.","빌립보, 데살로니가, 아덴, 고린도 등에 교회가 세워졌습니다."],
+      route:["antioch","derbe","lystra","troas","philippi","thess","berea","athens","corinth","ephesus","caesarea","antioch"] },
+  3:{ color:"#8fc0ff", title:"제3차 전도여행", date:"약 AD 53–57",
+      desc:["에베소에서 약 2~3년간 집중적으로 사역하며 큰 부흥과 함께 큰 소동(은장색 데메드리오의 난동)도 있었습니다.","여러 교회를 다시 방문해 굳건히 세운 뒤 예루살렘으로 향했습니다."],
+      route:["antioch","tarsus","iconium","ephesus","troas","philippi","corinth","miletus","caesarea","jerusalem"] },
+  4:{ color:"#e88f8f", title:"로마로의 여정", date:"약 AD 59–62",
+      desc:["체포된 바울은 로마 시민권자로서 황제에게 재판을 요청해 로마로 호송됩니다.","항해 중 큰 풍랑으로 멜리데(몰타) 섬에 난파했지만 무사히 구조되었고, 마침내 로마에 도착해 복음을 전합니다."],
+      route:["caesarea","myra","crete","malta","rome"] },
+};
+
+/* ============================================================
+   RENDER — TIMELINE
+   ============================================================ */
+function buildTimeline(){
+  const root = document.getElementById('tlRoot');
+  root.innerHTML = ERAS.map((era,ei)=>{
+    const evs = era.events.map((e,xi)=>
+      `<div class="ev" onclick='openEvent(${ei},${xi})'>
+         <span class="ev-dot">✦</span>
+         <div>
+           <div class="ev-date">${e.date}</div>
+           <div class="ev-name">${e.name}</div>
+           <div class="ev-ref">${e.ref}</div>
+         </div>
+       </div>`).join('');
+    return `<div class="era" id="era${ei}">
+      <div class="era-head" onclick="toggleEra(${ei})">
+        <span class="era-icon">${era.icon}</span>
+        <div class="era-meta">
+          <div class="era-date">${era.date}</div>
+          <div class="era-title">${era.title}</div>
+        </div>
+        <span class="era-arrow">›</span>
+      </div>
+      <div class="era-body"><div class="era-inner">${evs}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEra(i){
+  document.getElementById('era'+i).classList.toggle('open');
+}
+window.toggleEra = toggleEra;
+
+function openEvent(ei,xi){
+  const e = ERAS[ei].events[xi];
+  document.getElementById('mIcon').textContent = e.icon;
+  document.getElementById('mDate').textContent = e.date;
+  document.getElementById('mTitle').textContent = e.name;
+  document.getElementById('mRef').textContent = e.ref;
+  document.getElementById('mBody').innerHTML = e.body.map(p=>'<p>'+p+'</p>').join('');
+  const note = document.getElementById('mNote');
+  if(e.note){ note.style.display='block'; note.textContent = e.note; }
+  else note.style.display='none';
+  document.getElementById('evModal').classList.add('on');
+}
+window.openEvent = openEvent;
+
+function closeModal(){ document.getElementById('evModal').classList.remove('on'); }
+window.closeModal = closeModal;
+function closeModalBg(e){ if(e.target===document.getElementById('evModal')) closeModal(); }
+window.closeModalBg = closeModalBg;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ============================================================
+   RENDER — PAUL MAP
+   ============================================================ */
+function selectJourney(n, el){
+  document.querySelectorAll('.jp').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+
+  const j = JOURNEYS[n];
+  const routeLayer = document.getElementById('routeLayer');
+  const cityLayer  = document.getElementById('cityLayer');
+  routeLayer.innerHTML = '';
+  cityLayer.innerHTML  = '';
+
+  // build path
+  const pts = j.route.map(k=>CITIES[k]);
+  let d = 'M '+pts[0].x+' '+pts[0].y;
+  for(let i=1;i<pts.length;i++){ d += ' L '+pts[i].x+' '+pts[i].y; }
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',d);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke',j.color);
+  path.setAttribute('stroke-width','2.4');
+  path.setAttribute('stroke-linecap','round');
+  path.setAttribute('stroke-linejoin','round');
+  path.setAttribute('stroke-dasharray','5 4');
+  path.setAttribute('filter','url(#routeglow)');
+  routeLayer.appendChild(path);
+  // animate draw
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len;
+  path.getBoundingClientRect();
+  path.style.transition = 'stroke-dashoffset 1.6s ease';
+  path.style.strokeDashoffset = '0';
+  setTimeout(()=>{ path.style.strokeDasharray='5 4'; }, 1650);
+
+  // unique cities w/ order numbers
+  const seen = {};
+  j.route.forEach((k,idx)=>{
+    const c = CITIES[k];
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','city-dot');
+    // dot
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',c.x); dot.setAttribute('cy',c.y);
+    dot.setAttribute('r', (k===j.route[0]?5:3.6));
+    dot.setAttribute('fill', j.color);
+    dot.setAttribute('stroke','#0a1124'); dot.setAttribute('stroke-width','1.2');
+    // label (avoid duplicate labels)
+    if(!seen[k]){
+      seen[k]=1;
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('class','city-label');
+      lbl.setAttribute('x', c.x+6); lbl.setAttribute('y', c.y-5);
+      lbl.textContent = c.name;
+      g.appendChild(lbl);
+    }
+    g.appendChild(dot);
+    cityLayer.appendChild(g);
+  });
+
+  // info panel
+  document.getElementById('jInfo').innerHTML =
+    '<h3>'+j.title+'</h3>'+
+    '<div class="jdate">'+j.date+'</div>'+
+    j.desc.map(p=>'<p>'+p+'</p>').join('')+
+    '<div class="route"><b>주요 경로:</b> '+j.route.map(k=>CITIES[k].name).join(' → ')+'</div>';
+}
+window.selectJourney = selectJourney;
+
+/* ============================================================
+   VIEW SWITCH
+   ============================================================ */
+function switchView(id, el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+window.switchView = switchView;
+
+/* ============================================================
+   STARFIELD
+   ============================================================ */
+(function(){
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h,stars=[],shooters=[],t=0;
+  function resize(){
+    w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight;
+    const count=Math.min(200,Math.floor(w*h/8000)); stars=[];
+    for(let i=0;i<count;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+0.3,base:Math.random()*0.5+0.3,amp:Math.random()*0.5+0.2,sp:Math.random()*0.025+0.005,ph:Math.random()*Math.PI*2,gold:Math.random()<0.18});
+  }
+  function spawn(){const L=Math.random()<0.5;shooters.push({x:L?-50:w*Math.random(),y:Math.random()*h*0.5,vx:(L?1:-0.6)*(Math.random()*4+5),vy:Math.random()*2+2,life:0,max:Math.random()*40+40});}
+  function draw(){
+    ctx.clearRect(0,0,w,h); t++;
+    for(const s of stars){
+      const tw=s.base+s.amp*Math.sin(t*s.sp+s.ph);
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.gold?'rgba(232,198,106,'+Math.max(0,tw)+')':'rgba(220,233,255,'+Math.max(0,tw)+')';
+      ctx.shadowColor=s.gold?'rgba(232,198,106,.8)':'rgba(180,210,255,.7)';
+      ctx.shadowBlur=s.r*3; ctx.fill();
+    }
+    ctx.shadowBlur=0;
+    for(let i=shooters.length-1;i>=0;i--){
+      const sh=shooters[i]; sh.life++; sh.x+=sh.vx; sh.y+=sh.vy;
+      const a=Math.sin((sh.life/sh.max)*Math.PI), L=60, m=Math.hypot(sh.vx,sh.vy);
+      const g=ctx.createLinearGradient(sh.x,sh.y,sh.x-sh.vx/m*L,sh.y-sh.vy/m*L);
+      g.addColorStop(0,'rgba(255,255,255,'+a+')'); g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.strokeStyle=g; ctx.lineWidth=2; ctx.beginPath();
+      ctx.moveTo(sh.x,sh.y); ctx.lineTo(sh.x-sh.vx/m*L,sh.y-sh.vy/m*L); ctx.stroke();
+      if(sh.life>sh.max||sh.x>w+60||sh.x<-60) shooters.splice(i,1);
+    }
+    if(Math.random()<0.004&&shooters.length<2) spawn();
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize); resize(); draw();
+})();
+
+/* ===== AI 묻기 (Gemini via /api/gemini — 키는 Vercel 환경변수) ===== */
+function buildKnowledge(){
+  let lines = ['[성경 타임라인 — 시대와 사건]'];
+  ERAS.forEach(era => {
+    lines.push('● ' + era.title + ' (' + era.date + ')');
+    era.events.forEach(ev => {
+      lines.push('  - ' + ev.name + ' [' + ev.ref + ']: ' + (ev.body || []).join(' ')
+        + (ev.note ? ' (' + ev.note + ')' : ''));
+    });
+  });
+  lines.push('', '[바울의 전도여행]');
+  Object.keys(JOURNEYS).forEach(k => {
+    const j = JOURNEYS[k];
+    lines.push('● ' + (j.title || ('여행 ' + k)) + (j.date ? ' (' + j.date + ')' : ''));
+    if (j.desc) lines.push('  ' + (Array.isArray(j.desc) ? j.desc.join(' ') : j.desc));
+    if (j.route) {
+      const names = j.route.map(key => (CITIES[key] && CITIES[key].name) ? CITIES[key].name : key);
+      lines.push('  경로: ' + names.join(' → '));
+    }
+  });
+  return lines.join('\n');
+}
+
+function setAskAnswer(html, cls){
+  const el = document.getElementById('askAnswer');
+  el.className = 'ask-answer show' + (cls ? ' ' + cls : '');
+  el.innerHTML = html;
+}
+function askChip(q){ document.getElementById('askInput').value = q; askAI(); }
+window.askChip = askChip;
+
+async function askAI(){
+  const input = document.getElementById('askInput');
+  const btn = document.getElementById('askBtn');
+  const question = input.value.trim();
+  if(!question){ setAskAnswer('궁금한 점을 적어주세요.', 'err'); return; }
+
+  btn.disabled = true;
+  setAskAnswer('<span class="ask-dots"><span></span><span></span><span></span></span>', '');
+
+  const prompt =
+    '너는 교회 청소년부 학생들에게 성경의 역사를 쉽고 따뜻하게 설명해 주는 선생님이야.\n' +
+    '아래 [타임라인 자료]를 바탕으로 질문에 답해줘.\n' +
+    '규칙:\n' +
+    '- 쉽고 다정한 한국어로, 핵심을 간결하게 설명해줘.\n' +
+    '- 사건이면 무슨 일이 있었는지, 인물이면 어떤 사람인지, 미니 타임라인이면 순서대로 정리해줘.\n' +
+    '- 가능하면 관련 성경 구절(책/장)을 함께 알려줘.\n' +
+    '- 자료에 없는 내용도 성경의 일반적 사실 범위에서 도울 수 있지만, 확실하지 않으면 "성경 본문과 선생님께 확인해보면 좋아요"라고 안내해줘.\n' +
+    '- 지어내지 말고, 모르면 모른다고 솔직히 말해줘.\n\n' +
+    '[타임라인 자료]\n' + buildKnowledge() + '\n\n' +
+    '[질문]\n' + question;
+
+  try{
+    const res = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, temperature: 0.5 })
+    });
+    if(!res.ok){
+      let detail = '';
+      try { const e = await res.json(); detail = e.error || ''; } catch(e){}
+      if(res.status === 429) setAskAnswer('잠시 후 다시 시도해줘. (요청이 많아요)', 'err');
+      else if(res.status === 503) setAskAnswer('지금 잠깐 혼잡해요. 잠시 후 다시 시도해줘.', 'err');
+      else setAskAnswer('답을 불러오지 못했어요. 잠시 후 다시 시도해줘.', 'err');
+      btn.disabled = false; return;
+    }
+    const json = await res.json();
+    const text = (json.text || '').trim();
+    setAskAnswer(text ? escapeAsk(text) : '답을 만들지 못했어요. 다시 시도해줘.', text ? '' : 'err');
+  }catch(e){
+    setAskAnswer('연결에 문제가 있어요. 인터넷을 확인하고 다시 시도해줘.', 'err');
+  }finally{
+    btn.disabled = false;
+  }
+}
+window.askAI = askAI;
+function escapeAsk(s){
+  return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+
+/* ===== INIT ===== */
+buildTimeline();
+document.getElementById('era0').classList.add('open'); // open first era
+selectJourney(1, document.querySelector('.jp[data-j="1"]'));
+</script>
+</body>
+</html>
